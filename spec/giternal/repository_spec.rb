@@ -55,11 +55,11 @@ module Giternal
         should == 'newfile'
     end
 
-    it "should raise an error if the directory exists but there's no .git dir" do
+    it "should clone the .git directory if the directory and .git.frozen.tgz does not exist and there's no .git dir" do
       FileUtils.mkdir_p(GiternalHelper.checked_out_path('foo'))
-      lambda {
-        @repository.update
-      }.should raise_error(/Directory 'foo' exists but is not a git repository/)
+      File.exists?(GiternalHelper.checked_out_path('foo/.git')).should be_false
+      @repository.update
+      File.exists?(GiternalHelper.checked_out_path('foo/.git')).should be_true
     end
 
     describe "freezify" do

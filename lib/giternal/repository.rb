@@ -22,7 +22,7 @@ module Giternal
       FileUtils.mkdir_p checkout_path unless File.exist?(checkout_path)
       if checked_out?
         if !File.exist?(repo_path + '/.git')
-          raise "Directory '#{@name}' exists but is not a git repository"
+          update_output { `cd #{checkout_path} && git clone --no-checkout #{@repo_url} #{@name}/.git && mv #{@name}/.git/.git/* #{@name}/.git && rmdir #{@name}/.git/.git` }
         else
           update_output { `cd #{repo_path} && git pull 2>&1` }
         end
@@ -39,7 +39,7 @@ module Giternal
         `find .git | sort | xargs tar czf .git.frozen.tgz`
         FileUtils.rm_r('.git')
       end
-      `cd #{@base_dir} && git add -f #{rel_repo_path}`
+      `cd #{@base_dir} && git add -f #{rel_repo_path} && git rm --cached --ignore-unmatch #{rel_repo_path}/.git.frozen.tgz`
       true
     end
 
